@@ -2,7 +2,7 @@
 
 A production-grade household expense management application with real-time multi-user syncing, beautiful analytics, smart insights, and budget management.
 
-![HomeExpense](https://img.shields.io/badge/Version-1.0.0-6366f1) ![Next.js](https://img.shields.io/badge/Next.js-14-000000) ![Express](https://img.shields.io/badge/Express-4.x-green) ![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248) ![Socket.io](https://img.shields.io/badge/Socket.io-4.x-010101)
+![HomeExpense](https://img.shields.io/badge/Version-1.0.0-6366f1) ![Next.js](https://img.shields.io/badge/Next.js-15-000000) ![Express](https://img.shields.io/badge/Express-4.x-green) ![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248) ![Socket.io](https://img.shields.io/badge/Socket.io-4.x-010101)
 
 ## ✨ Features
 
@@ -15,7 +15,7 @@ A production-grade household expense management application with real-time multi
 - **Reports & Export** — Download PDF and Excel reports
 - **Search & Filters** — Filter by category, user, date, payment method
 - **Dark/Light Mode** — Theme switching with system preference
-- **Firebase Auth** — Email/password + Google Sign-In
+- **Custom Authentication** — Secure JWT-based local authentication
 - **Mobile-First** — Responsive design for all screen sizes
 - **Admin Panel** — User management, activity logs
 
@@ -23,10 +23,10 @@ A production-grade household expense management application with real-time multi
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS |
+| Frontend | Next.js 15 (App Router), TypeScript, Tailwind CSS v4 |
 | Backend | Node.js, Express.js |
 | Database | MongoDB + Mongoose |
-| Auth | Firebase Authentication |
+| Auth | Custom JWT Authentication (bcryptjs + jsonwebtoken) |
 | Real-time | Socket.io |
 | Charts | Recharts |
 | Export | jsPDF, SheetJS |
@@ -38,12 +38,12 @@ A production-grade household expense management application with real-time multi
 ### Prerequisites
 - Node.js 18+
 - MongoDB (local or Atlas)
-- Firebase project (for auth)
 
 ### 1. Clone & Install
 
 ```bash
-cd "HomeExpense Tracker app"
+git clone https://github.com/shadow01-lassi/Home_Expense_tracker.git
+cd Home_Expense_tracker
 npm run install:all
 ```
 
@@ -52,44 +52,27 @@ npm run install:all
 **Server** (`server/.env`):
 ```env
 MONGODB_URI=mongodb://localhost:27017/homeexpense
-PORT=5000
+PORT=5001
 NODE_ENV=development
 CLIENT_URL=http://localhost:3000
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_CLIENT_EMAIL=your_service_account_email
-FIREBASE_PRIVATE_KEY="your_private_key"
+JWT_SECRET=your_super_secret_jwt_key_here
 ```
 
 **Client** (`client/.env.local`):
 ```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=http://localhost:5001/api
+NEXT_PUBLIC_SOCKET_URL=http://localhost:5001
 ```
 
-### 3. Seed Database (Optional)
-
-```bash
-npm run seed
-```
-
-This creates 5 sample users, 40+ expenses, budgets, and categories.
-
-### 4. Run Development
+### 3. Run Development
 
 ```bash
 npm run dev
 ```
 
 - Frontend: http://localhost:3000
-- Backend: http://localhost:5000
-- API Health: http://localhost:5000/api/health
-
-### Dev Mode Login
-
-Without Firebase configured, use the **Dev Mode Login** button on the login page with a seeded user ID.
+- Backend: http://localhost:5001
+- API Health: http://localhost:5001/api/health
 
 ## 📁 Project Structure
 
@@ -105,7 +88,7 @@ Without Firebase configured, use the **Dev Mode Login** button on the login page
 │
 ├── server/                  # Express backend
 │   └── src/
-│       ├── config/          # DB, Firebase config
+│       ├── config/          # DB config
 │       ├── controllers/     # Business logic
 │       ├── middleware/      # Auth, error handling
 │       ├── models/          # Mongoose schemas
@@ -116,20 +99,6 @@ Without Firebase configured, use the **Dev Mode Login** button on the login page
 └── package.json             # Root workspace
 ```
 
-## 📊 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Register/sync user |
-| GET | `/api/auth/me` | Get current user |
-| POST | `/api/family/create` | Create family |
-| POST | `/api/family/join` | Join via invite code |
-| GET/POST | `/api/expenses` | List/add expenses |
-| GET | `/api/analytics/summary` | Dashboard summary |
-| GET | `/api/analytics/insights` | Smart insights |
-| GET/POST | `/api/budgets` | Get/set budgets |
-| GET | `/api/budgets/status` | Budget overview |
-
 ## 🎨 Design
 
 - **Colors**: Indigo primary, Emerald accent, Amber warnings
@@ -137,16 +106,10 @@ Without Firebase configured, use the **Dev Mode Login** button on the login page
 - **Effects**: Glassmorphism, gradient cards, micro-animations
 - **Dark Mode**: Full dark theme support
 
-## 📱 Responsive Breakpoints
-
-- **Mobile** (<640px): Bottom navigation, stacked layout
-- **Tablet** (640-1024px): Collapsible sidebar
-- **Desktop** (1024px+): Full sidebar, multi-column
-
 ## 🔒 Security
 
-- Firebase Authentication (JWT tokens)
-- Server-side token verification via Firebase Admin
+- Secure JWT-based Authentication
+- Password hashing via bcryptjs
 - Role-based access control (admin/member)
 - Input validation via express-validator
 - CORS & Helmet security headers
@@ -154,15 +117,20 @@ Without Firebase configured, use the **Dev Mode Login** button on the login page
 
 ## 🚢 Deployment
 
-**Frontend**: Deploy `client/` to Vercel
-```bash
-cd client && npx vercel
-```
+**1. Database (MongoDB Atlas)**
+- Create a free cluster on MongoDB Atlas
+- Get the connection string and set `MONGODB_URI` on your backend
 
-**Backend**: Deploy `server/` to Render/Railway
-- Set environment variables
-- Start command: `npm start`
-- Build command: `npm install`
+**2. Backend (Render / Railway)**
+- Connect your GitHub repository to Render as a "Web Service"
+- Root Directory: `server`
+- Start Command: `npm start`
+- Add Environment Variables: `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL`
+
+**3. Frontend (Vercel)**
+- Connect your GitHub repository to Vercel
+- Root Directory: `client`
+- Add Environment Variables: `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_SOCKET_URL` (pointing to your Render backend)
 
 ---
 
