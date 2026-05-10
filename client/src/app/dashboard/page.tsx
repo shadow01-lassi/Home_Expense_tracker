@@ -126,7 +126,7 @@ export default function DashboardPage() {
                   <Pie data={categoryData} cx="50%" cy="50%" outerRadius={100} innerRadius={60} paddingAngle={3} dataKey="value">
                     {categoryData.map((entry: any, i: number) => <Cell key={i} fill={entry.color} />)}
                   </Pie>
-                  <Tooltip formatter={(val: number) => formatCurrency(val)} />
+                  <Tooltip formatter={(val: any) => formatCurrency(Number(val))} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="flex flex-col gap-2 w-full md:w-48">
@@ -151,7 +151,7 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis dataKey="label" tick={{fontSize: 12, fill: 'var(--text-secondary)'}} />
                 <YAxis tick={{fontSize: 12, fill: 'var(--text-secondary)'}} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
-                <Tooltip formatter={(val: number) => formatCurrency(val)} />
+                <Tooltip formatter={(val: any) => formatCurrency(Number(val))} />
                 <Bar dataKey="total" fill="#6366f1" radius={[6,6,0,0]} />
               </BarChart>
             </ResponsiveContainer>

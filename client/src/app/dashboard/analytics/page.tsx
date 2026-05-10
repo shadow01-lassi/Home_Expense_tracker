@@ -78,7 +78,7 @@ export default function AnalyticsPage() {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart><Pie data={catData} cx="50%" cy="50%" outerRadius={120} innerRadius={70} paddingAngle={2} dataKey="value">
               {catData.map((e: any, i: number) => <Cell key={i} fill={e.color} />)}
-            </Pie><Tooltip formatter={(v: number) => formatCurrency(v)} /></PieChart>
+            </Pie><Tooltip formatter={(v: any) => formatCurrency(Number(v))} /></PieChart>
           </ResponsiveContainer>
           <div className="grid grid-cols-2 gap-2 mt-4">
             {catData.slice(0, 8).map((c: any, i: number) => (
@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="label" tick={{fontSize: 12, fill: 'var(--text-secondary)'}} />
               <YAxis tick={{fontSize: 12, fill: 'var(--text-secondary)'}} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v: number) => formatCurrency(v)} />
+              <Tooltip formatter={(v: any) => formatCurrency(Number(v))} />
               <Area type="monotone" dataKey="total" stroke="#6366f1" fill="url(#grad)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
@@ -114,7 +114,7 @@ export default function AnalyticsPage() {
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis type="number" tick={{fontSize: 12, fill: 'var(--text-secondary)'}} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
             <YAxis type="category" dataKey="name" width={120} tick={{fontSize: 11, fill: 'var(--text-secondary)'}} />
-            <Tooltip formatter={(v: number) => formatCurrency(v)} />
+            <Tooltip formatter={(v: any) => formatCurrency(Number(v))} />
             <Bar dataKey="value" radius={[0,6,6,0]}>
               {catData.slice(0, 10).map((e: any, i: number) => <Cell key={i} fill={e.color} />)}
             </Bar>
