@@ -4,6 +4,12 @@ A production-grade household expense management application with real-time multi
 
 ![HomeExpense](https://img.shields.io/badge/Version-1.0.0-6366f1) ![Next.js](https://img.shields.io/badge/Next.js-15-000000) ![Express](https://img.shields.io/badge/Express-4.x-green) ![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248) ![Socket.io](https://img.shields.io/badge/Socket.io-4.x-010101)
 
+## 🌐 Live Production Links
+
+- **Frontend App (Next.js)**: [https://home-expense-tracker-c9rt.vercel.app](https://home-expense-tracker-c9rt.vercel.app)
+- **Backend API (Express)**: [https://homeexpense-backend.onrender.com](https://homeexpense-backend.onrender.com)
+- **API Health Status**: [https://homeexpense-backend.onrender.com/api/health](https://homeexpense-backend.onrender.com/api/health)
+
 ## ✨ Features
 
 - **Multi-User Family System** — Create/join family workspaces with invite codes
