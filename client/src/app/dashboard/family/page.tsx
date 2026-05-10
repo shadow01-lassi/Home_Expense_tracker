@@ -6,7 +6,7 @@ import { getInitials } from '@/lib/utils';
 import { Users, Copy, UserPlus, Crown, LogOut, RefreshCw, Check, Shield } from 'lucide-react';
 
 export default function FamilyPage() {
-  const { user, token, devUserId, refreshUser } = useAuth();
+  const { user, token, refreshUser } = useAuth();
   const [family, setFamily] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -15,7 +15,7 @@ export default function FamilyPage() {
   const [inviteCode, setInviteCode] = useState('');
   const [copied, setCopied] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   useEffect(() => {
     const fetch = async () => {

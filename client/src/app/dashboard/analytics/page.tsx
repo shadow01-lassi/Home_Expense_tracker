@@ -9,13 +9,13 @@ import { TrendingUp, BarChart3, Lightbulb } from 'lucide-react';
 const COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#f97316','#14b8a6','#a855f7','#22c55e','#3b82f6'];
 
 export default function AnalyticsPage() {
-  const { user, token, devUserId } = useAuth();
+  const { user, token } = useAuth();
   const [period, setPeriod] = useState('monthly');
   const [summary, setSummary] = useState<any>(null);
   const [trends, setTrends] = useState<any[]>([]);
   const [insights, setInsights] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   const fetchData = useCallback(async () => {
     if (!user?.familyId) return;
@@ -28,7 +28,7 @@ export default function AnalyticsPage() {
       setSummary(s); setTrends(t.trends || []); setInsights(i.insights || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
-  }, [user?.familyId, period, token, devUserId]);
+  }, [user?.familyId, period, token]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 

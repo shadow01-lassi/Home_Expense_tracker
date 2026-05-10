@@ -8,7 +8,7 @@ import { CATEGORY_ICONS, PAYMENT_METHODS } from '@/lib/utils';
 import { ArrowLeft, Save, Camera, X } from 'lucide-react';
 
 export default function AddExpensePage() {
-  const { user, token, devUserId } = useAuth();
+  const { user, token } = useAuth();
   const { emit } = useSocket();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function AddExpensePage() {
     isRecurring: false, recurringFrequency: '',
   });
 
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   useEffect(() => {
     const fetchCats = async () => {

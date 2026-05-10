@@ -6,7 +6,7 @@ import { formatCurrency, CATEGORY_ICONS } from '@/lib/utils';
 import { Wallet, AlertTriangle, CheckCircle, Save, Plus, X } from 'lucide-react';
 
 export default function BudgetsPage() {
-  const { user, token, devUserId } = useAuth();
+  const { user, token } = useAuth();
   const [budget, setBudget] = useState<any>(null);
   const [spending, setSpending] = useState<any>(null);
   const [status, setStatus] = useState<any>(null);
@@ -15,7 +15,7 @@ export default function BudgetsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   useEffect(() => {
     const fetch = async () => {

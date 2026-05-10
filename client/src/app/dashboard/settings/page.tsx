@@ -7,13 +7,13 @@ import { getInitials } from '@/lib/utils';
 import { User, Sun, Moon, Monitor, Bell, Globe, Save, Trash2 } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { user, token, devUserId, refreshUser, signOutUser } = useAuth();
+  const { user, token, refreshUser, signOutUser } = useAuth();
   const { theme, setTheme } = useTheme();
   const [name, setName] = useState(user?.displayName || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [currency, setCurrency] = useState(user?.currency || '₹');
   const [saving, setSaving] = useState(false);
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   const saveProfile = async () => {
     setSaving(true);

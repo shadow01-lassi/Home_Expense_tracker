@@ -8,7 +8,7 @@ import { formatCurrency, formatDateTime, getInitials, CATEGORY_ICONS, PAYMENT_IC
 import { Search, Filter, Plus, Trash2, Edit, ChevronDown, X, Calendar, DollarSign } from 'lucide-react';
 
 export default function ExpensesPage() {
-  const { user, token, devUserId } = useAuth();
+  const { user, token } = useAuth();
   const { socket, emit } = useSocket();
   const [expenses, setExpenses] = useState<any[]>([]);
   const [pagination, setPagination] = useState<any>({});
@@ -18,7 +18,7 @@ export default function ExpensesPage() {
   const [filters, setFilters] = useState({ category: '', addedBy: '', paymentMethod: '', startDate: '', endDate: '' });
   const [page, setPage] = useState(1);
 
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   const fetchExpenses = useCallback(async () => {
     if (!user?.familyId) return;
@@ -36,7 +36,7 @@ export default function ExpensesPage() {
       setPagination(res.pagination);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
-  }, [user?.familyId, page, search, filters, token, devUserId]);
+  }, [user?.familyId, page, search, filters, token]);
 
   useEffect(() => { fetchExpenses(); }, [fetchExpenses]);
 

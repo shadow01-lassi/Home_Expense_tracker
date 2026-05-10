@@ -10,7 +10,7 @@ import { TrendingUp, TrendingDown, DollarSign, Calendar, Users, ArrowUpRight, Ar
 const COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#f97316','#14b8a6','#a855f7'];
 
 export default function DashboardPage() {
-  const { user, token, devUserId } = useAuth();
+  const { user, token } = useAuth();
   const { socket } = useSocket();
   const [summary, setSummary] = useState<any>(null);
   const [insights, setInsights] = useState<any[]>([]);
@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('monthly');
 
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   const fetchData = useCallback(async () => {
     if (!user?.familyId) { setLoading(false); return; }
@@ -37,7 +37,7 @@ export default function DashboardPage() {
     } catch (err) {
       console.error('Dashboard fetch error:', err);
     } finally { setLoading(false); }
-  }, [user?.familyId, period, token, devUserId]);
+  }, [user?.familyId, period, token]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 

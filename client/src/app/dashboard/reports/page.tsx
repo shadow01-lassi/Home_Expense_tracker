@@ -6,7 +6,7 @@ import { formatCurrency, formatDate, CATEGORY_ICONS } from '@/lib/utils';
 import { FileText, Download, Filter, Calendar } from 'lucide-react';
 
 export default function ReportsPage() {
-  const { user, token, devUserId } = useAuth();
+  const { user, token } = useAuth();
   const [expenses, setExpenses] = useState<any[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ export default function ReportsPage() {
     start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
     end: new Date().toISOString().split('T')[0],
   });
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   useEffect(() => {
     const fetch = async () => {
