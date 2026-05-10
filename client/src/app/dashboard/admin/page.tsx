@@ -6,12 +6,12 @@ import { getInitials, formatDateTime } from '@/lib/utils';
 import { Shield, Users, Activity, Trash2 } from 'lucide-react';
 
 export default function AdminPage() {
-  const { user, token, devUserId } = useAuth();
+  const { user, token } = useAuth();
   const [members, setMembers] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [tab, setTab] = useState<'users' | 'logs'>('users');
   const [loading, setLoading] = useState(true);
-  const authOpts = { token, devUserId };
+  const authOpts = { token };
 
   useEffect(() => {
     const fetch = async () => {
