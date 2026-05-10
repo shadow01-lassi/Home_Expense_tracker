@@ -31,8 +31,11 @@ export async function api(endpoint: string, options: FetchOptions = {}) {
   const config: RequestInit = {
     method,
     headers,
-    ...(body && { body: JSON.stringify(body) }),
   };
+
+  if (body !== undefined && body !== null) {
+    config.body = JSON.stringify(body);
+  }
 
   const res = await fetch(`${API_URL}${endpoint}`, config);
   const data = await res.json();
