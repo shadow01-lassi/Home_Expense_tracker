@@ -7,13 +7,14 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useSocket } from '@/contexts/SocketContext';
 import { getInitials } from '@/lib/utils';
 import {
-  LayoutDashboard, Receipt, PieChart, Wallet, FileText, Users, Settings, Shield,
+  LayoutDashboard, Receipt, Coins, PieChart, Wallet, FileText, Users, Settings, Shield,
   Plus, Sun, Moon, Bell, Search, Menu, X, LogOut, ChevronLeft, Wifi, WifiOff
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/dashboard/expenses', icon: Receipt, label: 'Expenses' },
+  { href: '/dashboard/splits', icon: Coins, label: 'Group Splits 📊' },
   { href: '/dashboard/analytics', icon: PieChart, label: 'Analytics' },
   { href: '/dashboard/budgets', icon: Wallet, label: 'Budgets' },
   { href: '/dashboard/reports', icon: FileText, label: 'Reports' },

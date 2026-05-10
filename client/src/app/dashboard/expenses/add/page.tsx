@@ -13,6 +13,10 @@ export default function AddExpensePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
+  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+  const [isSplit, setIsSplit] = useState(false);
+  const [paidBy, setPaidBy] = useState('');
+  const [splitWith, setSplitWith] = useState<string[]>([]);
   const [form, setForm] = useState({
     amount: '', category: 'Groceries', productName: '', notes: '',
     date: new Date().toISOString().split('T')[0], paymentMethod: 'Cash',
@@ -32,20 +36,52 @@ export default function AddExpensePage() {
     fetchCats();
   }, [user?.familyId]);
 
+  useEffect(() => {
+    const fetchFamily = async () => {
+      if (!user?.familyId) return;
+      try {
+        const res = await api('/family', authOpts);
+        const activeMembers = res.family?.members?.filter((m: any) => m.status === 'active')?.map((m: any) => m.user) || [];
+        setFamilyMembers(activeMembers);
+        if (user) {
+          setPaidBy(user._id);
+          setSplitWith(activeMembers.map((m: any) => m._id));
+        }
+      } catch (err) { console.error('Failed to fetch family members:', err); }
+    };
+    fetchFamily();
+  }, [user, token]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.amount || !form.productName) return;
     setLoading(true);
     try {
       const cat = categories.find(c => c.name === form.category);
+      
+      const body: any = {
+        ...form,
+        amount: Number(form.amount),
+        categoryColor: cat?.color || '#6366f1',
+        categoryIcon: cat?.icon || 'receipt',
+      };
+
+      if (isSplit && splitWith.length > 0) {
+        const shareAmount = Number((Number(form.amount) / splitWith.length).toFixed(2));
+        body.isSplit = true;
+        body.splitDetails = {
+          paidBy: paidBy || user?._id,
+          splitType: 'equal',
+          splitWith: splitWith.map(userId => ({
+            user: userId,
+            share: shareAmount,
+          })),
+        };
+      }
+
       const res = await api('/expenses', {
         method: 'POST', ...authOpts,
-        body: {
-          ...form,
-          amount: Number(form.amount),
-          categoryColor: cat?.color || '#6366f1',
-          categoryIcon: cat?.icon || 'receipt',
-        },
+        body,
       });
       emit('expense:added', res.expense);
       router.push('/dashboard/expenses');
@@ -130,6 +166,70 @@ export default function AddExpensePage() {
               <p className="text-sm text-[var(--text-secondary)]">Click to upload or drag & drop</p>
               <p className="text-xs text-[var(--text-secondary)] mt-1">PNG, JPG up to 5MB</p>
             </div>
+          </div>
+
+          {/* Split Expense Section */}
+          <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-hover)] space-y-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={isSplit} onChange={e => setIsSplit(e.target.checked)}
+                className="w-5 h-5 rounded border-[var(--border)] text-indigo-500 focus:ring-indigo-500" />
+              <div className="flex-1">
+                <span className="text-sm font-semibold text-[var(--text)] block">📊 Split this expense with family/friends</span>
+                <span className="text-xs text-[var(--text-secondary)]">Split cost equally among selected members</span>
+              </div>
+            </label>
+
+            {isSplit && (
+              <div className="pt-3 border-t border-[var(--border)] space-y-4 slide-in">
+                {/* Paid By */}
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Who Paid?</label>
+                  <select value={paidBy} onChange={e => setPaidBy(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg)] border border-[var(--border)] text-[var(--text)] focus:outline-none">
+                    {familyMembers.map(m => (
+                      <option key={m._id} value={m._id}>{m.displayName} {m._id === user?._id ? '(You)' : ''}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Split With Checklist */}
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Split with whom?</label>
+                  <div className="space-y-2">
+                    {familyMembers.map(m => {
+                      const checked = splitWith.includes(m._id);
+                      return (
+                        <label key={m._id} className="flex items-center gap-3 p-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg)] hover:bg-[var(--surface)] transition-all cursor-pointer">
+                          <input type="checkbox" checked={checked}
+                            onChange={() => {
+                              if (checked) {
+                                setSplitWith(prev => prev.filter(id => id !== m._id));
+                              } else {
+                                setSplitWith(prev => [...prev, m._id]);
+                              }
+                            }}
+                            className="w-4 h-4 rounded border-[var(--border)] text-indigo-500 focus:ring-indigo-500" />
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-indigo-500/15 text-indigo-500 flex items-center justify-center text-xs font-bold">
+                              {m.displayName ? m.displayName.slice(0, 2).toUpperCase() : 'U'}
+                            </div>
+                            <span className="text-sm font-medium text-[var(--text)]">{m.displayName} {m._id === user?._id ? '(You)' : ''}</span>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Split Info Banner */}
+                {splitWith.length > 0 && form.amount && (
+                  <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between text-indigo-500">
+                    <span className="text-sm font-medium">Split breakdown:</span>
+                    <span className="text-base font-bold">₹{(Number(form.amount) / splitWith.length).toFixed(2)} / person</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Recurring */}

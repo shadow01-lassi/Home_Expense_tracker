@@ -33,6 +33,8 @@ exports.getExpenses = async (req, res) => {
     const total = await Expense.countDocuments(query);
     const expenses = await Expense.find(query)
       .populate('addedBy', 'displayName email photoURL initials')
+      .populate('splitDetails.paidBy', 'displayName email photoURL initials')
+      .populate('splitDetails.splitWith.user', 'displayName email photoURL initials')
       .sort(sort)
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit));
@@ -56,7 +58,8 @@ exports.addExpense = async (req, res) => {
   try {
     const {
       amount, category, categoryColor, categoryIcon, productName,
-      notes, date, paymentMethod, receiptUrl, isRecurring, recurringFrequency, tags
+      notes, date, paymentMethod, receiptUrl, isRecurring, recurringFrequency, tags,
+      isSplit, splitDetails
     } = req.body;
 
     const expense = await Expense.create({
@@ -74,10 +77,14 @@ exports.addExpense = async (req, res) => {
       isRecurring: isRecurring || false,
       recurringFrequency: recurringFrequency || null,
       tags: tags || [],
+      isSplit: isSplit || false,
+      splitDetails: splitDetails || undefined,
     });
 
     const populated = await Expense.findById(expense._id)
-      .populate('addedBy', 'displayName email photoURL');
+      .populate('addedBy', 'displayName email photoURL')
+      .populate('splitDetails.paidBy', 'displayName email photoURL')
+      .populate('splitDetails.splitWith.user', 'displayName email photoURL');
 
     // Check budget alerts
     await checkBudgetAlert(req.user.familyId, category, amount);
@@ -109,7 +116,8 @@ exports.updateExpense = async (req, res) => {
 
     const allowedUpdates = [
       'amount', 'category', 'categoryColor', 'categoryIcon', 'productName',
-      'notes', 'date', 'paymentMethod', 'receiptUrl', 'isRecurring', 'recurringFrequency', 'tags'
+      'notes', 'date', 'paymentMethod', 'receiptUrl', 'isRecurring', 'recurringFrequency', 'tags',
+      'isSplit', 'splitDetails'
     ];
 
     allowedUpdates.forEach(field => {
@@ -120,7 +128,9 @@ exports.updateExpense = async (req, res) => {
 
     await expense.save();
     const populated = await Expense.findById(expense._id)
-      .populate('addedBy', 'displayName email photoURL');
+      .populate('addedBy', 'displayName email photoURL')
+      .populate('splitDetails.paidBy', 'displayName email photoURL')
+      .populate('splitDetails.splitWith.user', 'displayName email photoURL');
 
     // Log activity
     await ActivityLog.create({
@@ -168,7 +178,9 @@ exports.getExpense = async (req, res) => {
     const expense = await Expense.findOne({
       _id: req.params.id,
       familyId: req.user.familyId,
-    }).populate('addedBy', 'displayName email photoURL');
+    }).populate('addedBy', 'displayName email photoURL')
+      .populate('splitDetails.paidBy', 'displayName email photoURL')
+      .populate('splitDetails.splitWith.user', 'displayName email photoURL');
 
     if (!expense) return res.status(404).json({ error: 'Expense not found' });
     res.json({ expense });
