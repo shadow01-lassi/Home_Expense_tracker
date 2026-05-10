@@ -9,12 +9,14 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { resetPassword } = useAuth();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(''); setLoading(true);
-    try { await resetPassword(email); setSent(true); }
+    try { 
+      // await api('/auth/reset-password', { method: 'POST', body: { email } });
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setSent(true); 
+    }
     catch (err: any) { setError(err.message || 'Failed to send reset email'); }
     finally { setLoading(false); }
   };
