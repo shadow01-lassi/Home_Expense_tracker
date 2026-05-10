@@ -7,6 +7,7 @@ interface AppUser {
   _id: string;
   displayName: string;
   email: string;
+  phone?: string;
   photoURL: string;
   role: string;
   familyId: any;
